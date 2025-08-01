@@ -1,4 +1,5 @@
 import AdvocateTableRow from "./AdvocateTableRow";
+import { Advocate } from "@/app/types";
 
 const AdvocateTableBody = ({
   advocates,
