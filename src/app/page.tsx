@@ -2,18 +2,44 @@
 
 import { useEffect, useState } from "react";
 
+interface Advocate {
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly city: string;
+  readonly degree: string;
+  readonly specialties: readonly string[];
+  readonly yearsOfExperience: number;
+  readonly phoneNumber: number;
+}
+
+interface ApiResponse {
+  readonly data: readonly Advocate[];
+}
+
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  const [advocates, setAdvocates] = useState<readonly Advocate[]>([]);
+  const [filteredAdvocates, setFilteredAdvocates] = useState<
+    readonly Advocate[]
+  >([]);
 
   useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
+    const fetchAdvocates = async (): Promise<void> => {
+      try {
+        const response = await fetch("/api/advocates");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const jsonResponse: ApiResponse = await response.json();
         setAdvocates(jsonResponse.data);
         setFilteredAdvocates(jsonResponse.data);
-      });
-    });
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch advocates"
+        );
+      }
+    };
+
+    fetchAdvocates();
   }, []);
 
   const onChange = (e) => {
